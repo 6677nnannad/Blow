@@ -21,13 +21,6 @@
             background: #000;
         }
 
-        /* 防止弹窗时页面滚动 */
-        body.modal-open {
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-        }
-
         /* Loading Screen */
         .loading-screen {
             position: fixed;
@@ -126,7 +119,7 @@
         .heart-icon {
             position: absolute;
             top: 15px;
-            left: 120px; /* è°ƒæ•´å¿ƒå½¢ä½ç½®ï¼Œé è¿'æ—¶é—´å·¦è¾¹ */
+            left: 100px; /* 调整心形位置，更靠近时间 */
             font-size: 24px;
             color: #ff6b6b;
             text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
@@ -157,11 +150,11 @@
             box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
         }
 
-        /* Profile Image - è°ƒæ•´ä½ç½®ï¼Œæ›´é è¿'æ—¶é—´ */
+        /* Profile Image - 调整位置，更靠近时间 */
         .profile-image {
             position: fixed;
             top: 60px;
-            left: 20px; /* è°ƒæ•´ä½ç½®ï¼Œæ›´é è¿'æ—¶é—´ */
+            left: 20px; /* 调整位置，更靠近时间 */
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -176,7 +169,7 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
         }
 
-        /* Music Player - ç¼©å°å°ºå¯¸ */
+        /* Music Player - 缩小尺寸 */
         .music-player {
             position: fixed;
             bottom: 15px;
@@ -361,14 +354,14 @@
             transform: translateY(-2px);
         }
 
-        /* å³ä¸‹è§'åŠ å·æŒ‰é'® - ç¼©å°å¹¶æ"¹ä¸ºè"è‰² */
+        /* 右下角加号按钮 - 缩小并改为蓝色 */
         .add-button {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 35px; /* ç¼©å°å°ºå¯¸ */
-            height: 35px; /* ç¼©å°å°ºå¯¸ */
-            background: transparent; /* èƒŒæ™¯æ"¹ä¸ºé€æ˜Ž */
+            width: 35px; /* 缩小尺寸 */
+            height: 35px; /* 缩小尺寸 */
+            background: transparent; /* 背景改为透明 */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -385,16 +378,16 @@
         }
 
         .add-icon {
-            color: #1e90ff; /* åŠ å·æ"¹ä¸ºè"è‰² */
+            color: #1e90ff; /* 加号改为蓝色 */
             font-size: 24px;
             font-weight: bold;
             transition: transform 0.3s ease;
         }
 
-        /* åŠ å·æŒ‰é'®çš„é€‰é¡¹ */
+        /* 加号按钮的选项 */
         .add-options {
             position: fixed;
-            bottom: 65px; /* è°ƒæ•´ä½ç½®é€‚åº"æ–°æŒ‰é'®å¤§å° */
+            bottom: 65px; /* 调整位置适应新按钮大小 */
             right: 20px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 10px;
@@ -423,7 +416,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* åˆ é™¤æ¨¡å¼ä¸‹çš„æ ·å¼ */
+        /* 删除模式下的样式 */
         .delete-mode .photo-item:not(.original) {
             filter: blur(2px);
             opacity: 0.8;
@@ -452,7 +445,7 @@
             display: flex;
         }
 
-        /* ä¸Šä¼ æ¨¡æ€æ¡† */
+        /* 上传模态框 */
         .upload-modal {
             position: fixed;
             top: 0;
@@ -493,7 +486,7 @@
             margin: 12px 0;
         }
 
-        /* æ¶ˆæ¯å¼¹çª— */
+        /* 消息弹窗 */
         .message-popup {
             position: fixed;
             top: 50%;
@@ -516,11 +509,11 @@
             }
             
             .photo-wrapper {
-                max-width: 85%; /* ç§»åŠ¨ç«¯å›¾ç‰‡å®¹å™¨æ›´å° */
+                max-width: 85%; /* 移动端图片容器更小 */
             }
             
             .photo-item {
-                max-width: 100%; /* ç¡®ä¿å›¾ç‰‡è‡ªé€‚åº" */
+                max-width: 100%; /* 确保图片自适应 */
             }
             
             .quote-main {
@@ -539,11 +532,12 @@
                 width: 45px;
                 height: 45px;
                 top: 55px;
-                left: 15px; /* ç§»åŠ¨ç«¯ä½ç½®è°ƒæ•´ */
+                left: 15px; /* 移动端位置调整 */
             }
             
             .heart-icon {
-                left: 100px; /* ç§»åŠ¨ç«¯å¿ƒå½¢ä½ç½®è°ƒæ•´ */
+                left: 90px; /* 移动端心形位置调整 */
+                font-size: 20px;
             }
             
             .floating-quote {
@@ -553,12 +547,12 @@
             .add-button {
                 bottom: 15px;
                 right: 15px;
-                width: 30px; /* ç§»åŠ¨ç«¯åŠ å·æ›´å° */
-                height: 30px; /* ç§»åŠ¨ç«¯åŠ å·æ›´å° */
+                width: 30px; /* 移动端加号更小 */
+                height: 30px; /* 移动端加号更小 */
             }
             
             .add-options {
-                bottom: 55px; /* ç§»åŠ¨ç«¯é€‰é¡¹ä½ç½®è°ƒæ•´ */
+                bottom: 55px; /* 移动端选项位置调整 */
                 right: 15px;
             }
             
@@ -650,9 +644,10 @@
     </audio>
 
     <script>
-        // API endpoints - 更新为新的链接
-        const UPLOAD_API = 'https://mmb55.vercel.app/api/upload';
-        const GET_IMAGES_API = 'https://mmb55.vercel.app/api/content';
+        // API endpoints - 更新为新的API地址
+        const UPLOAD_API = 'https://manda99.vercel.app/api/upload';
+        const RECEIVE_API = 'https://manda99.vercel.app/api/receive';
+        const DELETE_API = 'https://manda99.vercel.app/api/delete';
 
         // Image URLs
         const images = [
@@ -681,7 +676,7 @@
             { main: "心の奥底に隠された涙", translation: "隐藏在内心深处的眼泪", lang: "ja" },
             { main: "Melancholy whispers in the wind", translation: "忧郁在风中低语", lang: "en" },
             { main: "그리움이 밤을 수놓는다", translation: "思念装点着夜晚", lang: "ko" },
-            { main: "儚い夢が心を包む", translation: "虚幻的梦境包围着心灵", lang: "ja" },
+            { main: "儚い夢가心を包む", translation: "虚幻的梦境包围着心灵", lang: "ja" },
             { main: "Solitude paints beautiful sorrows", translation: "孤独描绘着美丽的忧伤", lang: "en" },
             { main: "슬픔 속에서 피어나는 아름다움", translation: "在悲伤中绽放的美丽", lang: "ko" },
             { main: "静寂の中に響く心の声", translation: "寂静中回响的内心声音", lang: "ja" },
@@ -690,7 +685,7 @@
             { main: "記憶の片隅に残る温もり", translation: "记忆角落里残留的温暖", lang: "ja" },
             { main: "Whispered secrets of the heart", translation: "心中轻声诉说的秘密", lang: "en" },
             { main: "아픈 마음을 달래는 밤", translation: "安慰痛苦心灵的夜晚", lang: "ko" },
-            { main: "優しい嘘で包まれた真実", translation: "被温柔谎言包裹的真相", lang: "ja" },
+            { main: "優しい嘘で包まされた真実", translation: "被温柔谎言包裹的真相", lang: "ja" },
             { main: "Beauty found in broken things", translation: "在破碎中发现的美丽", lang: "en" }
         ];
 
@@ -703,7 +698,7 @@
             { main: "추억은 가슴 속에 영원히", translation: "回忆永远在心中", lang: "ko" },
             { main: "時間は傷を癒してくれる", translation: "时间会治愈伤痛", lang: "ja" },
             { main: "Sometimes silence speaks volumes", translation: "有时沉默胜过千言万语", lang: "en" },
-            { main: "눈물은 마음의 언어", translation: "眼泪是心灵的语言", lang: "ko" },
+            { main: "눈물은 마음の 언어", translation: "眼泪是心灵的语言", lang: "ko" },
             { main: "夜空に願いを込めて", translation: "向夜空许下心愿", lang: "ja" },
             { main: "Broken hearts still beat with love", translation: "破碎的心依然为爱跳动", lang: "en" }
         ];
@@ -716,7 +711,6 @@
         let isPasswordCorrect = false;
         let isDeleteMode = false;
         let userUploads = [];
-        let scrollPosition = 0; // 存储页面滚动位置
 
         // Initialize
         window.addEventListener('load', function() {
@@ -871,50 +865,180 @@
         
         async function loadUserUploadsFromAPI() {
             try {
-                const response = await fetch(GET_IMAGES_API);
-                if (!response.ok) {
-                    throw new Error('获取图片失败');
+                // 获取图片
+                const imagesResponse = await fetch(`${RECEIVE_API}?type=image`);
+                const imagesData = await imagesResponse.json();
+                
+                // 获取文本
+                const textsResponse = await fetch(`${RECEIVE_API}?type=text`);
+                const textsData = await textsResponse.json();
+                
+                if (!imagesData.success || !textsData.success) {
+                    throw new Error('获取内容失败');
                 }
                 
-                const uploadedImages = await response.json();
-                userUploads = uploadedImages;
+                // 合并图片和文本
+                userUploads = [
+                    ...imagesData.files.map(file => ({ ...file, type: 'image' })),
+                    ...textsData.files.map(file => ({ ...file, type: 'text' }))
+                ];
                 
                 const container = document.querySelector('.album-container');
-                uploadedImages.forEach(upload => {
-                    const quoteData = {
-                        main: upload.text || '',
-                        translation: upload.translation || '',
-                        lang: upload.lang || 'en'
-                    };
-                    const section = createPhotoSection(upload.imageUrl, quoteData, false);
+                userUploads.forEach(upload => {
+                    let quoteData;
+                    let imageUrl;
+                    
+                    if (upload.type === 'image') {
+                        // 图片内容
+                        imageUrl = upload.url;
+                        quoteData = {
+                            main: upload.name || '上传的图片',
+                            translation: '',
+                            lang: 'en'
+                        };
+                    } else {
+                        // 文本内容
+                        imageUrl = 'https://s21.ax1x.com/2025/08/26/pVyoUud.jpg'; // 默认背景图
+                        try {
+                            const textContent = atob(upload.content); // 解码base64文本
+                            quoteData = {
+                                main: textContent,
+                                translation: '',
+                                lang: 'zh'
+                            };
+                        } catch (e) {
+                            quoteData = {
+                                main: '上传的文本',
+                                translation: '',
+                                lang: 'zh'
+                            };
+                        }
+                    }
+                    
+                    const section = createPhotoSection(imageUrl, quoteData, false);
                     container.appendChild(section);
                 });
             } catch (error) {
-                console.error('Error loading uploaded images:', error);
-                showMessage('加载上传图片失败');
+                console.error('Error loading uploaded content:', error);
+                showMessage('加载上传内容失败');
             }
         }
         
-        async function saveUserUploadsToAPI() {
+        async function uploadContent() {
+            const text = document.getElementById('textInput').value.trim();
+            const imageFile = document.getElementById('imageInput').files[0];
+            
+            if (!text && !imageFile) {
+                showMessage('请至少上传文本或图片');
+                return;
+            }
+            
             try {
+                let type, filename, content;
+                
+                if (imageFile) {
+                    // 上传图片
+                    type = 'image';
+                    filename = imageFile.name;
+                    content = await convertImageToBase64(imageFile);
+                    content = content.split(',')[1]; // 移除data:image/png;base64,前缀
+                } else {
+                    // 上传文本
+                    type = 'text';
+                    filename = `text_${Date.now()}.txt`;
+                    content = btoa(unescape(encodeURIComponent(text))); // 文本转换为base64
+                }
+                
+                // 发送到API
                 const response = await fetch(UPLOAD_API, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(userUploads)
+                    body: JSON.stringify({
+                        type: type,
+                        filename: filename,
+                        content: content
+                    })
                 });
                 
-                if (!response.ok) {
-                    throw new Error('保存图片失败');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('上传成功！');
+                    closeUploadModal();
+                    
+                    // 重新加载内容
+                    const container = document.querySelector('.album-container');
+                    // 移除所有非原始内容
+                    const sections = container.querySelectorAll('.photo-section');
+                    for (let i = images.length; i < sections.length; i++) {
+                        container.removeChild(sections[i]);
+                    }
+                    // 重新加载用户上传内容
+                    loadUserUploadsFromAPI();
+                } else {
+                    showMessage('上传失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                showMessage('上传失败，请重试');
+            }
+        }
+        
+        async function deleteUploadedContent(section) {
+            try {
+                const container = document.querySelector('.album-container');
+                const sections = container.querySelectorAll('.photo-section');
+                const index = Array.from(sections).indexOf(section);
+                
+                if (index < images.length) return; // 原始图片不能删除
+                
+                const uploadIndex = index - images.length;
+                const upload = userUploads[uploadIndex];
+                
+                if (!upload) {
+                    showMessage('删除失败：未找到内容');
+                    return;
                 }
                 
-                return await response.json();
+                // 发送删除请求
+                const response = await fetch(DELETE_API, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: upload.type,
+                        filename: upload.name,
+                        sha: upload.sha
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('删除成功！');
+                    // 从DOM中移除
+                    container.removeChild(section);
+                    // 从数组中移除
+                    userUploads.splice(uploadIndex, 1);
+                } else {
+                    showMessage('删除失败: ' + (result.error || '未知错误'));
+                }
             } catch (error) {
-                console.error('Error saving uploaded images:', error);
-                showMessage('保存图片失败');
-                throw error;
+                console.error('删除失败:', error);
+                showMessage('删除失败，请重试');
             }
+        }
+        
+        function convertImageToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
         }
 
         function toggleMusic() {
@@ -995,28 +1119,13 @@
             }, 4000);
         }
 
-        // 防止弹窗滚动的辅助函数
-        function preventScroll() {
-            scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-            document.body.classList.add('modal-open');
-            document.body.style.top = `-${scrollPosition}px`;
-        }
-
-        function restoreScroll() {
-            document.body.classList.remove('modal-open');
-            document.body.style.top = '';
-            window.scrollTo(0, scrollPosition);
-        }
-
         function openTreasureModal() {
-            preventScroll();
             document.getElementById('treasureModal').style.display = 'flex';
         }
 
         function closeTreasureModal() {
             document.getElementById('treasureModal').style.display = 'none';
             document.getElementById('passwordInput').value = '';
-            restoreScroll();
         }
 
         function checkPassword() {
@@ -1024,7 +1133,7 @@
             if (password === '070809') { // 修改密码为070809
                 isPasswordCorrect = true;
                 closeTreasureModal();
-                showMessage('你答对啦！现在可以使用上传与删除了');
+                showMessage('你答对咯！现在可以使用上传与删除了');
             } else {
                 showMessage('哎呀~你输错了呢');
                 document.getElementById('passwordInput').value = '';
@@ -1058,7 +1167,6 @@
         
         function openUploadModal() {
             document.getElementById('addOptions').style.display = 'none';
-            preventScroll();
             document.getElementById('uploadModal').style.display = 'flex';
         }
         
@@ -1066,131 +1174,6 @@
             document.getElementById('uploadModal').style.display = 'none';
             document.getElementById('textInput').value = '';
             document.getElementById('imageInput').value = '';
-            restoreScroll();
-        }
-        
-        async function uploadContent() {
-            const text = document.getElementById('textInput').value.trim();
-            const imageFile = document.getElementById('imageInput').files[0];
-            
-            if (!text && !imageFile) {
-                showMessage('请至少上传文本或图片');
-                return;
-            }
-            
-            try {
-                let imageUrl = null;
-                
-                if (imageFile) {
-                    // 将图片转换为Base64
-                    imageUrl = await convertImageToBase64(imageFile);
-                    
-                    // 检测文本语言并自动翻译
-                    let translation = '';
-                    let lang = 'en';
-                    
-                    if (text) {
-                        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) {
-                            lang = 'ja';
-                            translation = '【日语文本待翻译】';
-                        } else if (/[\uAC00-\uD7AF]/.test(text)) {
-                            lang = 'ko';
-                            translation = '【韩语文本待翻译】';
-                        } else if (/[a-zA-Z]/.test(text)) {
-                            lang = 'en';
-                            translation = '【英语文本待翻译】';
-                        } else {
-                            lang = 'zh';
-                            translation = text;
-                        }
-                    }
-                    
-                    // 创建新的上传内容
-                    const newUpload = {
-                        text: text,
-                        translation: translation,
-                        lang: lang,
-                        imageUrl: imageUrl
-                    };
-                    
-                    // 添加到用户上传列表
-                    userUploads.push(newUpload);
-                    
-                    // 发送到API
-                    await saveUserUploadsToAPI();
-                    
-                    // 添加到相册
-                    const container = document.querySelector('.album-container');
-                    const quoteData = {
-                        main: text,
-                        translation: translation,
-                        lang: lang
-                    };
-                    const section = createPhotoSection(imageUrl, quoteData, false);
-                    container.appendChild(section);
-                    
-                    closeUploadModal();
-                    showMessage('上传成功！');
-                } else {
-                    // 只有文本的情况
-                    let translation = '';
-                    let lang = 'en';
-                    
-                    if (text) {
-                        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) {
-                            lang = 'ja';
-                            translation = '【日语文本待翻译】';
-                        } else if (/[\uAC00-\uD7AF]/.test(text)) {
-                            lang = 'ko';
-                            translation = '【韩语文本待翻译】';
-                        } else if (/[a-zA-Z]/.test(text)) {
-                            lang = 'en';
-                            translation = '【英语文本待翻译】';
-                        } else {
-                            lang = 'zh';
-                            translation = text;
-                        }
-                    }
-                    
-                    // 创建新的上传内容（只有文本）
-                    const newUpload = {
-                        text: text,
-                        translation: translation,
-                        lang: lang,
-                        imageUrl: null
-                    };
-                    
-                    // 添加到用户上传列表
-                    userUploads.push(newUpload);
-                    await saveUserUploadsToAPI();
-                    
-                    // 添加到相册（只有文本，使用默认背景图）
-                    const container = document.querySelector('.album-container');
-                    const quoteData = {
-                        main: text,
-                        translation: translation,
-                        lang: lang
-                    };
-                    const defaultImage = 'https://s21.ax1x.com/2025/08/26/pVyoUud.jpg';
-                    const section = createPhotoSection(defaultImage, quoteData, false);
-                    container.appendChild(section);
-                    
-                    closeUploadModal();
-                    showMessage('上传成功！');
-                }
-            } catch (error) {
-                console.error('上传失败:', error);
-                showMessage('上传失败，请重试');
-            }
-        }
-        
-        function convertImageToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
         }
         
         function toggleDeleteMode() {
@@ -1205,29 +1188,11 @@
                 showMessage('已退出删除模式');
             }
         }
-        
-        async function deleteUploadedContent(section) {
-            const container = document.querySelector('.album-container');
-            const index = Array.from(container.children).indexOf(section) - images.length;
-            
-            if (index >= 0 && index < userUploads.length) {
-                userUploads.splice(index, 1);
-                try {
-                    await saveUserUploadsToAPI();
-                    container.removeChild(section);
-                    showMessage('删除成功！');
-                } catch (error) {
-                    console.error('删除失败:', error);
-                    showMessage('删除失败，请重试');
-                }
-            }
-        }
 
         // Keyboard events
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeTreasureModal();
-                closeUploadModal();
                 if (isDeleteMode) {
                     toggleDeleteMode();
                 }
