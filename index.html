@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WenYan</title>
+    <title>温言 - 记忆卡片</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Caveat:wght@400;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
@@ -19,6 +19,11 @@
             font-family: 'Dancing Script', cursive;
             overflow-x: hidden;
             background: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Loading Screen */
@@ -57,6 +62,20 @@
             height: 100%;
             background: url('https://s21.ax1x.com/2025/08/26/pVyoUud.jpg') center/cover no-repeat;
             z-index: -2;
+            transition: opacity 0.8s ease;
+        }
+
+        .album-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://s21.ax1x.com/2025/08/26/pVyoUud.jpg') center/cover no-repeat;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            filter: brightness(1) blur(0px);
         }
 
         .bg-overlay {
@@ -107,6 +126,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            transition: opacity 0.8s ease;
         }
 
         .time-display {
@@ -116,11 +136,11 @@
             font-weight: 500;
         }
 
-        /* 修改心形图标位置到宝藏按钮左边 */
+        /* 修改心形图标位置到木鱼按钮左边 */
         .heart-icon {
             position: absolute;
             top: 15px;
-            right: 80px; /* 调整到宝藏按钮左边 */
+            right: 80px; /* 调整到木鱼按钮左边 */
             font-size: 24px;
             color: #ff6b6b;
             text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
@@ -132,8 +152,8 @@
             50% { transform: scale(1.1); }
         }
 
-        .treasure-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        .wooden-fish-btn {
+            background: linear-gradient(45deg, #8B4513, #A0522D);
             color: white;
             border: none;
             padding: 6px 12px;
@@ -142,13 +162,28 @@
             font-size: 12px;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.4);
             transition: all 0.3s ease;
         }
 
-        .treasure-btn:hover {
+        .wooden-fish-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.6);
+        }
+
+        /* 功德气泡样式 - 修改位置 */
+        .merit-bubble {
+            position: fixed;
+            background: rgba(139, 69, 19, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            white-space: nowrap;
         }
 
         /* Profile Image */
@@ -226,144 +261,278 @@
             }
         }
 
-        /* Album Container */
-        .album-container {
-            min-height: 100vh;
-            padding-top: 90px;
-        }
-
-        .photo-section {
-            min-height: 100vh;
+        /* 卡片容器 */
+        .cards-container {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 40px 15px;
+            align-items: flex-start;
+            gap: 25px;
+            padding: 100px 20px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
-        .photo-wrapper {
+        .card-wrapper {
             position: relative;
-            max-width: 90%;
-            width: 100%;
-            max-width: 600px;
+            width: 220px;
+            height: 300px;
+            perspective: 1000px;
+            margin-top: 20px;
         }
 
-        .photo-item {
+        .card {
+            position: relative;
             width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
-            transition: all 0.5s ease;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
             cursor: pointer;
         }
 
-        .photo-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+        .card:hover {
+            transform: rotateY(15deg) rotateX(5deg);
         }
 
-        .quote-text {
+        .card-front, .card-back {
             position: absolute;
-            top: -70px;
-            left: 50%;
-            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* 修改为顶部对齐 */
+            align-items: center;
+            padding: 15px 20px;
             text-align: center;
-            color: #fff;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            font-weight: 500;
-            z-index: 10;
         }
 
-        .quote-main {
-            font-size: 20px;
-            margin-bottom: 6px;
-            font-family: 'Great Vibes', cursive;
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .quote-translation {
-            font-size: 12px;
-            opacity: 0.8;
-            font-family: 'Noto Sans', sans-serif;
+        .card-cover {
+            width: 100%;
+            height: 65%; /* 调整图片高度占比 */
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 5px; /* 图片向上移动 */
         }
 
-        /* Floating quotes */
-        .floating-quote {
-            position: fixed;
+        .card-title {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            margin-bottom: 5px; /* 名称和计数器之间的间距 */
+        }
+
+        .card-count {
             color: rgba(255, 255, 255, 0.8);
-            font-size: 16px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0;
-            animation: fadeInOut 4s ease-in-out;
+            font-size: 14px;
+            margin-top: 0; /* 计数器在名称下方 */
         }
 
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateY(20px); }
-            20%, 80% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Modal */
-        .modal {
+        /* 相册查看器 */
+        .album-viewer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: transparent;
             display: none;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            z-index: 10001;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.8s ease;
         }
 
-        .modal-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
+        /* 修改相册头部样式 - 居中显示 */
+        .album-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             color: white;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-            max-width: 90%;
-            width: 350px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 10px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 10;
             text-align: center;
         }
 
-        .modal button {
-            background: #ff6b6b;
-            color: white;
+        .album-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 2px; /* 减少间距 */
+        }
+
+        .album-counter {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-top: 0; /* 确保没有额外的间距 */
+        }
+
+        /* 添加操作按钮 */
+        .album-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 16px;
             cursor: pointer;
-            font-size: 14px;
-            margin: 5px;
+            backdrop-filter: blur(5px);
             transition: all 0.3s ease;
         }
 
-        .modal button:hover {
-            background: #ee5a24;
-            transform: translateY(-2px);
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
         }
 
-        /* 右下角加号按钮 - 放大尺寸并改为蓝色 */
+        .album-content {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px; /* 向上移动内容 */
+        }
+
+        .album-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .album-slide.active {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .album-image {
+            width: 90%;
+            height: 70%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .album-text {
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            max-width: 80%;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .album-quote {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .album-translation {
+            font-size: 16px;
+            opacity: 0.8;
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        .album-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+            z-index: 20;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            display: none; /* 隐藏导航按钮 */
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .album-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.2);
+        }
+
+        /* 右下角加号按钮 */
         .add-button {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 50px; /* 增大尺寸 */
-            height: 50px; /* 增大尺寸 */
-            background: rgba(30, 144, 255, 0.2); /* 添加半透明背景 */
-            border: 2px solid #1e90ff; /* 添加边框 */
+            width: 50px;
+            height: 50px;
+            background: rgba(30, 144, 255, 0.2);
+            border: 2px solid #1e90ff;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -382,7 +551,7 @@
 
         .add-icon {
             color: #1e90ff;
-            font-size: 28px; /* 增大图标尺寸 */
+            font-size: 28px;
             font-weight: bold;
             transition: transform 0.3s ease;
         }
@@ -390,7 +559,7 @@
         /* 加号按钮的选项 */
         .add-options {
             position: fixed;
-            bottom: 85px; /* 调整位置适应新按钮大小 */
+            bottom: 85px;
             right: 20px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 10px;
@@ -403,50 +572,21 @@
         }
 
         .option-btn {
-            padding: 10px 15px; /* 增大按钮尺寸 */
+            padding: 10px 15px;
             margin: 4px 0;
             border: none;
             border-radius: 5px;
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             cursor: pointer;
-            font-size: 14px; /* 增大字体 */
+            font-size: 14px;
             transition: all 0.3s ease;
-            min-width: 80px; /* 设置最小宽度 */
+            min-width: 80px;
         }
 
         .option-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* 删除模式下的样式 */
-        .delete-mode .photo-item:not(.original) {
-            filter: blur(2px);
-            opacity: 0.8;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 25px;
-            height: 25px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .delete-mode .delete-btn {
-            display: flex;
         }
 
         /* 上传模态框 */
@@ -506,26 +646,141 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
+        /* 卡片扇开动画 */
+        .cards-fan {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .card-wrapper:nth-child(1) { transform: rotate(-5deg); }
+        .card-wrapper:nth-child(2) { transform: rotate(-2deg); }
+        .card-wrapper:nth-child(3) { transform: rotate(1deg); }
+        .card-wrapper:nth-child(4) { transform: rotate(4deg); }
+
+        .card-wrapper:hover {
+            z-index: 10;
+            transform: scale(1.05) rotate(0deg) !important;
+            transition: transform 0.5s ease;
+        }
+
+        /* 删除按钮样式 */
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25px;
+            height: 25px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* 确认删除对话框 */
+        .confirm-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10005;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        .confirm-dialog button {
+            margin: 10px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .confirm-yes {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 返回区域 */
+        .return-area {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2001;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .return-area:hover {
+            background: rgba(0, 255, 0, 0.5);
+        }
+
+        .return-icon {
+            font-size: 20px;
+            color: white;
+        }
+
+        /* 随机文案样式 */
+        .random-text {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            text-align: center;
+            transition: opacity 1.5s ease;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 200px;
+        }
+
+        .random-text .translation {
+            font-size: 12px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .photo-section {
-                padding: 30px 15px;
+            .cards-container {
+                padding-top: 80px;
+                gap: 15px;
             }
             
-            .photo-wrapper {
-                max-width: 85%;
+            .card-wrapper {
+                width: 150px;
+                height: 200px;
             }
             
-            .photo-item {
-                max-width: 100%;
-            }
-            
-            .quote-main {
+            .card-title {
                 font-size: 18px;
-            }
-            
-            .quote-translation {
-                font-size: 11px;
             }
             
             .time-display {
@@ -539,29 +794,71 @@
                 left: 15px;
             }
             
-            /* 移动端心形图标位置调整 */
             .heart-icon {
-                right: 70px; /* 移动端宝藏按钮左边 */
+                right: 70px;
                 font-size: 22px;
             }
             
-            .floating-quote {
+            .album-header {
+                top: 15px;
+            }
+            
+            .album-title {
+                font-size: 20px;
+            }
+            
+            .album-counter {
+                font-size: 14px;
+            }
+            
+            .album-actions {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .action-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+            
+            .album-content {
+                width: 95%;
+                height: 65vh;
+                margin-top: 30px;
+            }
+            
+            .album-image {
+                width: 85%;
+                height: 60%;
+            }
+            
+            .album-text {
+                margin-bottom: 15px;
+                max-width: 90%;
+            }
+            
+            .album-quote {
+                font-size: 20px;
+            }
+            
+            .album-translation {
                 font-size: 14px;
             }
             
             .add-button {
                 bottom: 15px;
                 right: 15px;
-                width: 45px; /* 移动端加号稍小 */
-                height: 45px; /* 移动端加号稍小 */
+                width: 45px;
+                height: 45px;
             }
             
             .add-icon {
-                font-size: 24px; /* 移动端图标稍小 */
+                font-size: 24px;
             }
             
             .add-options {
-                bottom: 75px; /* 移动端选项位置调整 */
+                bottom: 75px;
                 right: 15px;
             }
             
@@ -570,10 +867,32 @@
                 left: 12px;
                 width: 40px;
                 height: 40px;
+                z-index: 3000; /* 确保音乐播放器在相册查看器上方 */
             }
             
             .music-icon {
                 font-size: 16px;
+            }
+            
+            .return-area {
+                width: 40px;
+                height: 40px;
+                top: 15px;
+                left: 15px;
+            }
+            
+            .return-icon {
+                font-size: 18px;
+            }
+            
+            .merit-bubble {
+                font-size: 16px;
+                padding: 8px 16px;
+            }
+            
+            .random-text {
+                font-size: 14px;
+                max-width: 150px;
             }
         }
     </style>
@@ -585,14 +904,15 @@
     </div>
 
     <!-- Background -->
-    <div class="bg-container"></div>
+    <div class="bg-container" id="bgContainer"></div>
+    <div class="album-bg" id="albumBg"></div>
     <div class="bg-overlay"></div>
 
     <!-- Header -->
-    <div class="header">
+    <div class="header" id="header">
         <div class="time-display" id="timeDisplay"></div>
         <div class="heart-icon">❤️</div>
-        <button class="treasure-btn" onclick="openTreasureModal()">宝藏</button>
+        <button class="wooden-fish-btn" onclick="tapWoodenFish()">木鱼</button>
     </div>
 
     <!-- Profile Image -->
@@ -606,6 +926,38 @@
         <div class="music-icon">🎵</div>
     </div>
 
+    <!-- 卡片容器 -->
+    <div class="cards-container" id="cardsContainer">
+        <!-- 卡片将通过JS动态生成 -->
+    </div>
+
+    <!-- 相册查看器 -->
+    <div class="album-viewer" id="albumViewer">
+        <div class="album-header">
+            <div class="album-title" id="albumTitle"></div>
+            <div class="album-counter" id="albumCounter"></div>
+        </div>
+        <div class="album-actions" id="albumActions">
+            <button class="action-btn" onclick="openUploadModal('image')">📤</button>
+            <button class="action-btn" onclick="enableDeleteMode()">🗑️</button>
+        </div>
+        <div class="album-content" id="albumContent">
+            <!-- 幻灯片将通过JS动态生成 -->
+        </div>
+        <div class="album-nav">
+            <button class="nav-btn prev-btn" onclick="prevSlide()">❮</button>
+            <button class="nav-btn next-btn" onclick="nextSlide()">❯</button>
+        </div>
+        <div class="album-dots" id="albumDots">
+            <!-- 轮播点将通过JS动态生成 -->
+        </div>
+    </div>
+
+    <!-- 返回区域 -->
+    <div class="return-area" id="returnArea" onclick="backToCards()">
+        <div class="return-icon">←</div>
+    </div>
+
     <!-- 右下角加号按钮 -->
     <div class="add-button" id="addButton" onclick="handleAddButton()">
         <div class="add-icon">+</div>
@@ -613,31 +965,17 @@
 
     <!-- 加号按钮选项 -->
     <div class="add-options" id="addOptions">
-        <button class="option-btn" onclick="openUploadModal()">添加</button>
-        <button class="option-btn" onclick="toggleDeleteMode()">删除</button>
-    </div>
-
-    <!-- Album Container -->
-    <div class="album-container" id="albumContainer">
-        <!-- Photo sections will be generated by JavaScript -->
-    </div>
-
-    <!-- Password Modal -->
-    <div class="modal" id="treasureModal">
-        <div class="modal-content">
-            <h3>答对密码有惊喜 💎</h3>
-            <input type="password" id="passwordInput" placeholder="请输入密码">
-            <br>
-            <button onclick="checkPassword()">确定</button>
-            <button onclick="closeTreasureModal()">取消</button>
-        </div>
+        <!-- 选项将通过JS动态生成 -->
     </div>
 
     <!-- 上传模态框 -->
     <div class="upload-modal" id="uploadModal">
         <div class="upload-content">
-            <h3>上传内容</h3>
-            <textarea id="textInput" placeholder="请输入文本内容（可选）"></textarea>
+            <h3 id="uploadTitle">上传内容</h3>
+            <div id="cardNameField">
+                <input type="text" id="cardNameInput" placeholder="请输入卡片名称">
+            </div>
+            <textarea id="textInput" placeholder="请输入文本内容"></textarea>
             <input type="file" id="imageInput" accept="image/*">
             <br>
             <button onclick="uploadContent()">上传</button>
@@ -645,91 +983,90 @@
         </div>
     </div>
 
+    <!-- 确认删除对话框 -->
+    <div class="confirm-dialog" id="confirmDialog">
+        <h3 id="confirmMessage">真的要删了吗？</h3>
+        <button class="confirm-yes" onclick="confirmDelete(true)">要</button>
+        <button class="confirm-no" onclick="confirmDelete(false)">不要</button>
+    </div>
+
     <!-- 消息弹窗 -->
     <div class="message-popup" id="messagePopup"></div>
 
+    <!-- 功德气泡 -->
+    <div class="merit-bubble" id="meritBubble"></div>
+
     <audio id="backgroundMusic" loop preload="auto">
-        <source src="https://raw.githubusercontent.com/6677nnannad/my-wenb-music/refs/heads/main/haru%20haru.mp3" type="audio/mpeg">
+        <source src="https://raw.githubusercontent.com/6677nnannad/my-wenb-music/refs/heads/main/FaRuxue.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // 更新API endpoints
-        const UPLOAD_API = 'https://manda99.vercel.app/api/upload';
-        const GET_IMAGES_API = 'https://manda99.vercel.app/api/receive';
-        const DELETE_API = 'https://manda99.vercel.app/api/delete';
-
-        // Image URLs
-        const images = [
-            'https://s21.ax1x.com/2025/08/26/pVyoG9O.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyoT8U.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyo72F.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyoHv4.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyoqKJ.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyoLr9.jpg',
-            'https://s21.ax1x.com/2025/08/26/pVyoObR.jpg',
-            'https://pic.itxiaohui.top/20250826/7d87ea90f93391070a74c60562e37d24.jpg',
-            'https://pic.itxiaohui.top/20250826/75ab2fbb9b0c32d304a2048d755313f0.jpg',
-            'https://pic.itxiaohui.top/20250826/1ac4f123d972adbc6397892176d7f955.jpg',
-            'https://pic.itxiaohui.top/20250826/cd61b4b4712ef9afb3ae71965b3e7cb0.jpg',
-            'https://pic.itxiaohui.top/20250826/b5cee1a7f10b1503dc5b7ec7c158fa2c.jpg',
-            'https://pic.itxiaohui.top/20250826/b8940c81fe3d6b2500926609e98d4a70.jpg',
-            'https://pic.itxiaohui.top/20250826/b049ffdfe00f7cf4c5db9bc5e260a194.jpg',
-            'https://pic.itxiaohui.top/20250826/bd37208fdad5f3e800eed2017e767a78.jpg',
-            'https://pic.itxiaohui.top/20250826/dd289be3bff468a132d153e4732f8a06.jpg'
+        // 数据结构
+        const cardsData = [
+            {
+                id: 1,
+                name: "温言",
+                images: [
+                    { 
+                        url: "https://s21.ax1x.com/2025/08/26/pVyoG9O.jpg", 
+                        quote: { main: "Silent moments speak the loudest", translation: "寂静的时刻最能诉说心声", lang: "en" }
+                    },
+                    { 
+                        url: "https://s21.ax1x.com/2025/08/26/pVyoT8U.jpg", 
+                        quote: { main: "마음속 깊은 곳의 외로움", translation: "心灵深处的孤独", lang: "ko" }
+                    },
+                    { 
+                        url: "https://s21.ax1x.com/2025/08/26/pVyo72F.jpg", 
+                        quote: { main: "心の奥底に隠された涙", translation: "隐藏在内心深处的眼泪", lang: "ja" }
+                    },
+                    { 
+                        url: "https://s21.ax1x.com/2025/08/26/pVyoHv4.jpg", 
+                        quote: { main: "Melancholy whispers in the wind", translation: "忧郁在风中低语", lang: "en" }
+                    }
+                ]
+            }
         ];
 
-        // Quotes for images
-        const imageQuotes = [
-            { main: "Silent moments speak the loudest", translation: "寂静的时刻最能诉说心声", lang: "en" },
-            { main: "마음속 깊은 곳의 외로움", translation: "心灵深处的孤独", lang: "ko" },
-            { main: "心の奥底に隠された涙", translation: "隐藏在内心深处的眼泪", lang: "ja" },
-            { main: "Melancholy whispers in the wind", translation: "忧郁在风中低语", lang: "en" },
-            { main: "그리움이 밤을 수놓는다", translation: "思念装点着夜晚", lang: "ko" },
-            { main: "儚い夢が心を包む", translation: "虚幻的梦境包围着心灵", lang: "ja" },
-            { main: "Solitude paints beautiful sorrows", translation: "孤独描绘着美丽的忧伤", lang: "en" },
-            { main: "슬픔 속에서 피어나는 아름다움", translation: "在悲伤中绽放的美丽", lang: "ko" },
-            { main: "静寂の中に響く心の声", translation: "寂静中回响的内心声音", lang: "ja" },
-            { main: "Tears that shine like diamonds", translation: "如钻石般闪耀的泪珠", lang: "en" },
-            { main: "달빛 아래 흘러가는 시간", translation: "月光下流逝的时光", lang: "ko" },
-            { main: "記憶の片隅に残る温もり", translation: "记忆角落里残留的温暖", lang: "ja" },
-            { main: "Whispered secrets of the heart", translation: "心中轻声诉说的秘密", lang: "en" },
-            { main: "아픈 마음을 달래는 밤", translation: "安慰痛苦心灵的夜晚", lang: "ko" },
-            { main: "優しい嘘で包まれた真実", translation: "被温柔谎言包裹的真相", lang: "ja" },
-            { main: "Beauty found in broken things", translation: "在破碎中发现的美丽", lang: "en" }
+        // 随机伤感文案
+        const randomTexts = [
+            { text: "Silent moments speak the loudest", translation: "寂静的时刻最能诉说心声", lang: "en" },
+            { text: "마음속 깊은 곳의 외로움", translation: "心灵深处的孤独", lang: "ko" },
+            { text: "心の奥底に隠された涙", translation: "隐藏在内心深处的眼泪", lang: "ja" },
+            { text: "Melancholy whispers in the wind", translation: "忧郁在风中低语", lang: "en" },
+            { text: "사랑은 눈물의 씨앗을 뿌린다", translation: "爱洒下泪水的种子", lang: "ko" },
+            { text: "愛は痛みを伴う", translation: "爱伴随着痛苦", lang: "ja" },
+            { text: "The deepest love hurts the most", translation: "最深的爱伤得最深", lang: "en" },
+            { text: "그대 없는 나는 공허해", translation: "没有你的我很空虚", lang: "ko" },
+            { text: "あなたのいない世界", translation: "没有你的世界", lang: "ja" },
+            { text: "Love is a bittersweet tragedy", translation: "爱是一场苦乐参半的悲剧", lang: "en" },
+            { text: "사랑한 기억이 고통이 될 때", translation: "当相爱的记忆变成痛苦时", lang: "ko" },
+            { text: "愛の記憶は消えない傷", translation: "爱的记忆是无法消失的伤", lang: "ja" },
+            { text: "Heartbreaks are the tattoos of the soul", translation: "心碎是灵魂的纹身", lang: "en" }
         ];
 
-        // Floating quotes
-        const floatingQuotes = [
-            { main: "Love is not about possession", translation: "爱不是占有", lang: "en" },
-            { main: "사랑은 기다림이다", translation: "爱是等待", lang: "ko" },
-            { main: "君への想いは星のように", translation: "对你的思念如星辰般", lang: "ja" },
-            { main: "Distance means nothing to hearts", translation: "距离对心灵而言毫无意义", lang: "en" },
-            { main: "추억은 가슴 속에 영원히", translation: "回忆永远在心中", lang: "ko" },
-            { main: "時間は傷を癒してくれる", translation: "时间会治愈伤痛", lang: "ja" },
-            { main: "Sometimes silence speaks volumes", translation: "有时沉默胜过千言万语", lang: "en" },
-            { main: "눈물은 마음의 언어", translation: "眼泪是心灵的语言", lang: "ko" },
-            { main: "夜空に願いを込めて", translation: "向夜空许下心愿", lang: "ja" },
-            { main: "Broken hearts still beat with love", translation: "破碎的心依然为爱跳动", lang: "en" }
-        ];
-
+        let userCards = [];
         let currentMusic = null;
         let isPlaying = false;
-        let usedFloatingQuotes = [];
         let hasInteracted = false;
         let isAudioReady = false;
-        let isPasswordCorrect = false;
+        let currentCardId = null;
+        let currentSlideIndex = 0;
+        let carouselTimeout = null; // 改为timeout而不是interval
+        let uploadType = 'card'; // 'card' 或 'image'
         let isDeleteMode = false;
-        let userUploads = [];
+        let pendingDelete = { type: null, id: null, index: null };
+        let meritCount = 0;
+        let lastInteractionTime = 0; // 记录最后一次交互时间
 
-        // Initialize
+        // 初始化
         window.addEventListener('load', function() {
             // 预加载音频
             preloadAudio();
             
-            // 更新时间和创建相册
+            // 更新时间和创建卡片
             updateTime();
             setInterval(updateTime, 1000);
-            createAlbum();
+            createCards();
             
             // 3秒后隐藏加载屏幕
             setTimeout(() => {
@@ -741,7 +1078,10 @@
                         addInteractionListener();
                     }
                     createHeartParticles();
-                    startFloatingQuotes();
+                    
+                    // 开始显示随机文案
+                    setInterval(showRandomText, 4000);
+                    setTimeout(showRandomText, 1000);
                 }, 1000);
             }, 3000);
         });
@@ -809,116 +1149,295 @@
             document.getElementById('timeDisplay').textContent = timeString;
         }
 
-        function createAlbum() {
-            const container = document.querySelector('.album-container');
+        function createCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
             
-            // 添加原始图片
-            images.forEach((imageUrl, index) => {
-                const section = createPhotoSection(imageUrl, imageQuotes[index], true);
-                container.appendChild(section);
+            // 添加默认卡片
+            cardsData.forEach(card => {
+                if (card.images && card.images.length > 0) {
+                    const cardElement = createCardElement(card);
+                    container.appendChild(cardElement);
+                }
             });
             
-            // 从API获取用户上传的内容
-            loadUserUploadsFromAPI();
+            // 添加用户卡片
+            userCards.forEach(card => {
+                if (card.images && card.images.length > 0) {
+                    const cardElement = createCardElement(card);
+                    container.appendChild(cardElement);
+                }
+            });
         }
         
-        function createPhotoSection(imageUrl, quoteData, isOriginal = false) {
-            const section = document.createElement('div');
-            section.className = 'photo-section';
+        function createCardElement(card) {
+            const cardWrapper = document.createElement('div');
+            cardWrapper.className = 'card-wrapper';
+            cardWrapper.dataset.cardId = card.id;
             
-            const wrapper = document.createElement('div');
-            wrapper.className = 'photo-wrapper';
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
             
-            const quoteDiv = document.createElement('div');
-            quoteDiv.className = 'quote-text';
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-front';
             
-            const mainQuote = document.createElement('div');
-            mainQuote.className = 'quote-main';
-            mainQuote.textContent = quoteData.main;
+            const cardTitle = document.createElement('div');
+            cardTitle.className = 'card-title';
+            cardTitle.textContent = card.name;
             
-            const translation = document.createElement('div');
-            translation.className = 'quote-translation';
-            translation.textContent = quoteData.translation;
+            const coverImg = document.createElement('img');
+            coverImg.className = 'card-cover';
+            coverImg.src = card.images[0].url;
+            coverImg.alt = card.name;
             
-            quoteDiv.appendChild(mainQuote);
-            quoteDiv.appendChild(translation);
+            const cardCount = document.createElement('div');
+            cardCount.className = 'card-count';
+            cardCount.textContent = `${card.images.length} 张图片`;
             
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = `Photo`;
-            img.className = 'photo-item';
-            if (isOriginal) {
-                img.classList.add('original');
-            }
+            cardFront.appendChild(cardTitle);
+            cardFront.appendChild(coverImg);
+            cardFront.appendChild(cardCount);
             
-            // 添加删除按钮
-            const deleteBtn = document.createElement('div');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '×';
-            deleteBtn.onclick = function(e) {
-                e.stopPropagation();
-                if (isOriginal) {
-                    showMessage('删不了一点，只能删自己上传的~');
-                } else {
-                    deleteUploadedContent(section);
-                }
-            };
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
             
-            wrapper.appendChild(quoteDiv);
-            wrapper.appendChild(img);
-            wrapper.appendChild(deleteBtn);
-            section.appendChild(wrapper);
+            // 添加卡片背面内容（可选）
+            const cardBackContent = document.createElement('div');
+            cardBackContent.style.padding = '15px';
+            cardBackContent.style.textAlign = 'center';
+            cardBackContent.innerHTML = `
+                <div style="font-size: 20px; margin-bottom: 10px;">${card.name}</div>
+                <div style="font-size: 14px; color: #666;">点击查看内容</div>
+            `;
             
-            return section;
+            cardBack.appendChild(cardBackContent);
+            
+            cardElement.appendChild(cardFront);
+            cardElement.appendChild(cardBack);
+            
+            cardWrapper.appendChild(cardElement);
+            
+            // 添加点击事件
+            cardWrapper.addEventListener('click', function() {
+                if (isDeleteMode) return; // 删除模式下不响应点击
+                openAlbumViewer(card.id);
+            });
+            
+            return cardWrapper;
         }
         
-        async function loadUserUploadsFromAPI() {
-            try {
-                const response = await fetch(GET_IMAGES_API);
-                if (!response.ok) {
-                    throw new Error('获取图片失败');
-                }
+        function openAlbumViewer(cardId) {
+            currentCardId = cardId;
+            const card = [...cardsData, ...userCards].find(c => c.id == cardId);
+            
+            if (!card) return;
+            
+            // 隐藏头像
+            document.querySelector('.profile-image').style.display = 'none';
+            
+            // 淡出卡片容器和背景
+            document.getElementById('cardsContainer').style.opacity = '0';
+            document.getElementById('cardsContainer').style.transform = 'scale(0.95)';
+            document.getElementById('header').style.opacity = '0';
+            document.getElementById('bgContainer').style.opacity = '0';
+            
+            // 淡入相册背景
+            setTimeout(() => {
+                document.getElementById('albumBg').style.opacity = '1';
                 
-                const uploadedImages = await response.json();
-                userUploads = Array.isArray(uploadedImages) ? uploadedImages : [];
+                // 设置相册标题和计数器
+                document.getElementById('albumTitle').textContent = card.name;
+                document.getElementById('albumCounter').textContent = `1 / ${card.images.length}`;
                 
-                const container = document.querySelector('.album-container');
-                userUploads.forEach(upload => {
-                    const quoteData = {
-                        main: upload.text || '',
-                        translation: upload.translation || '',
-                        lang: upload.lang || 'en'
-                    };
-                    const section = createPhotoSection(upload.imageUrl, quoteData, false);
-                    section.dataset.uploadId = upload.id; // 存储ID用于删除
-                    container.appendChild(section);
+                // 显示操作按钮
+                document.getElementById('albumActions').style.display = 'flex';
+                
+                // 隐藏加号按钮
+                document.getElementById('addButton').style.display = 'none';
+                
+                // 创建查看器内容
+                const albumContent = document.getElementById('albumContent');
+                albumContent.innerHTML = '';
+                
+                const dotsContainer = document.getElementById('albumDots');
+                dotsContainer.innerHTML = '';
+                
+                card.images.forEach((image, index) => {
+                    // 创建幻灯片
+                    const slide = document.createElement('div');
+                    slide.className = 'album-slide';
+                    if (index === 0) slide.classList.add('active');
+                    
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'album-text';
+                    
+                    const quote = document.createElement('div');
+                    quote.className = 'album-quote';
+                    quote.textContent = image.quote.main;
+                    
+                    const translation = document.createElement('div');
+                    translation.className = 'album-translation';
+                    translation.textContent = image.quote.translation;
+                    
+                    textDiv.appendChild(quote);
+                    textDiv.appendChild(translation);
+                    
+                    const img = document.createElement('img');
+                    img.className = 'album-image';
+                    img.src = image.url;
+                    img.alt = `Slide ${index + 1}`;
+                    
+                    slide.appendChild(textDiv);
+                    slide.appendChild(img);
+                    
+                    // 添加删除按钮（如果处于删除模式）
+                    if (isDeleteMode) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = '×';
+                        deleteBtn.onclick = function(e) {
+                            e.stopPropagation();
+                            showDeleteConfirm('image', cardId, index);
+                        };
+                        slide.appendChild(deleteBtn);
+                    }
+                    
+                    albumContent.appendChild(slide);
+                    
+                    // 创建轮播点
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    if (index === 0) dot.classList.add('active');
+                    dot.dataset.index = index;
+                    dot.addEventListener('click', function() {
+                        goToSlide(index);
+                    });
+                    
+                    dotsContainer.appendChild(dot);
                 });
-            } catch (error) {
-                console.error('Error loading uploaded images:', error);
-                showMessage('加载上传图片失败');
-            }
+                
+                // 显示查看器和返回区域
+                document.getElementById('albumViewer').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('albumViewer').style.opacity = '1';
+                    document.getElementById('returnArea').style.opacity = '1';
+                }, 50);
+                
+                // 开始自动轮播
+                startCarousel();
+            }, 800);
         }
         
-        async function saveUserUploadsToAPI(uploadData) {
-            try {
-                const response = await fetch(UPLOAD_API, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(uploadData)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('保存图片失败');
+        function startCarousel() {
+            clearTimeout(carouselTimeout);
+            lastInteractionTime = Date.now();
+            resetCarouselTimer();
+        }
+        
+        function resetCarouselTimer() {
+            clearTimeout(carouselTimeout);
+            // 如果4秒内没有交互，则切换到下一张
+            carouselTimeout = setTimeout(() => {
+                if (Date.now() - lastInteractionTime >= 4000) {
+                    nextSlide();
                 }
+            }, 4000);
+        }
+        
+        function nextSlide() {
+            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            if (!card) return;
+            
+            const slides = document.querySelectorAll('.album-slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            slides[currentSlideIndex].classList.remove('active');
+            dots[currentSlideIndex].classList.remove('active');
+            
+            currentSlideIndex = (currentSlideIndex + 1) % card.images.length;
+            
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+            
+            // 更新计数器
+            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+            
+            // 重置轮播计时器
+            resetCarouselTimer();
+        }
+        
+        function prevSlide() {
+            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            if (!card) return;
+            
+            const slides = document.querySelectorAll('.album-slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            slides[currentSlideIndex].classList.remove('active');
+            dots[currentSlideIndex].classList.remove('active');
+            
+            currentSlideIndex = (currentSlideIndex - 1 + card.images.length) % card.images.length;
+            
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+            
+            // 更新计数器
+            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+            
+            // 重置轮播计时器
+            resetCarouselTimer();
+        }
+        
+        function goToSlide(index) {
+            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            if (!card) return;
+            
+            const slides = document.querySelectorAll('.album-slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            slides[currentSlideIndex].classList.remove('active');
+            dots[currentSlideIndex].classList.remove('active');
+            
+            currentSlideIndex = index;
+            
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+            
+            // 更新计数器
+            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+            
+            // 重置轮播计时器
+            resetCarouselTimer();
+        }
+        
+        function backToCards() {
+            // 淡出相册查看器和返回区域
+            document.getElementById('albumViewer').style.opacity = '0';
+            document.getElementById('returnArea').style.opacity = '0';
+            document.getElementById('albumBg').style.opacity = '0';
+            
+            setTimeout(() => {
+                document.getElementById('albumViewer').style.display = 'none';
+                document.getElementById('cardsContainer').style.display = 'flex';
+                document.getElementById('addButton').style.display = 'flex';
                 
-                return await response.json();
-            } catch (error) {
-                console.error('Error saving uploaded images:', error);
-                showMessage('保存图片失败');
-                throw error;
-            }
+                // 显示头像
+                document.querySelector('.profile-image').style.display = 'block';
+                
+                // 淡入卡片容器和背景
+                document.getElementById('cardsContainer').style.opacity = '1';
+                document.getElementById('cardsContainer').style.transform = 'scale(1)';
+                document.getElementById('header').style.opacity = '1';
+                document.getElementById('bgContainer').style.opacity = '1';
+                
+                clearTimeout(carouselTimeout);
+                currentSlideIndex = 0;
+                currentCardId = null;
+                isDeleteMode = false;
+                
+                // 重新创建卡片（确保没有图片的卡片被移除）
+                createCards();
+            }, 800);
         }
 
         function toggleMusic() {
@@ -968,56 +1487,27 @@
             }, 2000);
         }
 
-        function startFloatingQuotes() {
-            setInterval(() => {
-                if (usedFloatingQuotes.length >= floatingQuotes.length) {
-                    usedFloatingQuotes = [];
-                }
-                
-                const availableQuotes = floatingQuotes.filter((_, index) => !usedFloatingQuotes.includes(index));
-                const randomIndex = Math.floor(Math.random() * availableQuotes.length);
-                const quote = availableQuotes[randomIndex];
-                const originalIndex = floatingQuotes.indexOf(quote);
-                
-                usedFloatingQuotes.push(originalIndex);
-                
-                const quoteElement = document.createElement('div');
-                quoteElement.className = 'floating-quote';
-                quoteElement.innerHTML = `
-                    <div style="font-size: 18px; margin-bottom: 5px; font-family: ${quote.lang === 'ja' ? 'Noto Sans JP' : quote.lang === 'ko' ? 'Noto Sans KR' : 'Dancing Script'}, cursive;">${quote.main}</div>
-                    <div style="font-size: 11px; opacity: 0.7;">${quote.translation}</div>
-                `;
-                
-                quoteElement.style.left = Math.random() * 80 + 10 + '%';
-                quoteElement.style.top = Math.random() * 80 + 10 + '%';
-                
-                document.body.appendChild(quoteElement);
-                
-                setTimeout(() => {
-                    quoteElement.remove();
-                }, 4000);
-            }, 4000);
-        }
-
-        function openTreasureModal() {
-            document.getElementById('treasureModal').style.display = 'flex';
-        }
-
-        function closeTreasureModal() {
-            document.getElementById('treasureModal').style.display = 'none';
-            document.getElementById('passwordInput').value = '';
-        }
-
-        function checkPassword() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === '070809') {
-                isPasswordCorrect = true;
-                closeTreasureModal();
-                showMessage('你答对咯！现在可以使用上传与删除了');
-            } else {
-                showMessage('哎呀~你输错了呢');
-                document.getElementById('passwordInput').value = '';
-            }
+        function tapWoodenFish() {
+            meritCount++;
+            
+            // 显示功德气泡 - 修改位置到木鱼按钮下方
+            const bubble = document.getElementById('meritBubble');
+            bubble.textContent = `功德 +1 (累计: ${meritCount})`;
+            
+            // 获取木鱼按钮的位置
+            const woodenFishBtn = document.querySelector('.wooden-fish-btn');
+            const rect = woodenFishBtn.getBoundingClientRect();
+            
+            // 设置气泡位置在木鱼按钮下方
+            bubble.style.left = (rect.left + rect.width/2) + 'px';
+            bubble.style.top = (rect.bottom + 10) + 'px'; // 10px为间距
+            bubble.style.transform = 'translateX(-50%)';
+            bubble.style.opacity = '1';
+            
+            // 2秒后淡出
+            setTimeout(() => {
+                bubble.style.opacity = '0';
+            }, 2000);
         }
         
         function showMessage(message) {
@@ -1030,205 +1520,297 @@
             }, 2000);
         }
 
+        // 显示随机伤感文案
+        function showRandomText() {
+            const textData = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+            const textElement = document.createElement('div');
+            textElement.className = 'random-text';
+            textElement.innerHTML = `
+                <div class="text-main">${textData.text}</div>
+                <div class="translation">${textData.translation}</div>
+            `;
+            
+            // 随机位置
+            const x = Math.random() * (window.innerWidth - 200) + 100;
+            const y = Math.random() * (window.innerHeight - 100) + 50;
+            textElement.style.left = `${x}px`;
+            textElement.style.top = `${y}px`;
+            
+            // 随机旋转角度（-30度到30度）
+            const rotation = Math.random() * 60 - 30;
+            textElement.style.transform = `rotate(${rotation}deg)`;
+            
+            document.body.appendChild(textElement);
+            
+            // 淡入
+            setTimeout(() => {
+                textElement.style.opacity = '1';
+            }, 100);
+            
+            // 3秒后淡出并移除
+            setTimeout(() => {
+                textElement.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(textElement);
+                }, 1500);
+            }, 3000);
+        }
+
         function handleAddButton() {
-            if (!isPasswordCorrect) {
-                showMessage('打开宝藏后再试试呢~');
+            // 只在卡片选择页面显示选项
+            if (currentCardId) {
                 return;
             }
             
-            const options = document.getElementById('addOptions');
+            // 切换删除模式
             if (isDeleteMode) {
-                toggleDeleteMode();
+                isDeleteMode = false;
+                showMessage('已退出删除模式');
+                
+                // 刷新视图
+                createCards();
+                
+                return;
+            }
+            
+            // 显示选项
+            updateAddOptions();
+            const options = document.getElementById('addOptions');
+            options.style.display = options.style.display === 'flex' ? 'none' : 'flex';
+        }
+        
+        function updateAddOptions() {
+            const options = document.getElementById('addOptions');
+            options.innerHTML = '';
+            
+            if (currentCardId) {
+                // 在卡片内时不显示选项
                 options.style.display = 'none';
+                return;
             } else {
-                options.style.display = options.style.display === 'flex' ? 'none' : 'flex';
+                // 不在卡片内 - 显示上传卡片和删除卡片选项
+                const uploadBtn = document.createElement('button');
+                uploadBtn.className = 'option-btn';
+                uploadBtn.textContent = '上传卡片';
+                uploadBtn.onclick = function() {
+                    openUploadModal('card');
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'option-btn';
+                deleteBtn.textContent = '删除卡片';
+                deleteBtn.onclick = function() {
+                    isDeleteMode = true;
+                    options.style.display = 'none';
+                    showMessage('请点击要删除的卡片');
+                    
+                    // 为所有卡片添加删除按钮
+                    const cards = document.querySelectorAll('.card-wrapper');
+                    cards.forEach(card => {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.textContent = '×';
+                        deleteBtn.onclick = function(e) {
+                            e.stopPropagation();
+                            const cardId = card.dataset.cardId;
+                            showDeleteConfirm('card', cardId);
+                        };
+                        card.appendChild(deleteBtn);
+                    });
+                };
+                
+                options.appendChild(uploadBtn);
+                options.appendChild(deleteBtn);
             }
         }
         
-        function openUploadModal() {
+        function openUploadModal(type) {
+            uploadType = type;
             document.getElementById('addOptions').style.display = 'none';
+            
+            if (type === 'card') {
+                document.getElementById('uploadTitle').textContent = '上传新卡片';
+                document.getElementById('cardNameField').style.display = 'block';
+            } else {
+                document.getElementById('uploadTitle').textContent = '添加图片到当前卡片';
+                document.getElementById('cardNameField').style.display = 'none';
+                
+                // 检查是否在卡片浏览模式
+                if (!currentCardId) {
+                    showMessage('请先打开一个卡片');
+                    return;
+                }
+            }
+            
             document.getElementById('uploadModal').style.display = 'flex';
         }
         
         function closeUploadModal() {
             document.getElementById('uploadModal').style.display = 'none';
+            document.getElementById('cardNameInput').value = '';
             document.getElementById('textInput').value = '';
             document.getElementById('imageInput').value = '';
         }
         
-        async function uploadContent() {
+        function uploadContent() {
+            const cardName = document.getElementById('cardNameInput').value.trim();
             const text = document.getElementById('textInput').value.trim();
             const imageFile = document.getElementById('imageInput').files[0];
             
-            if (!text && !imageFile) {
-                showMessage('请至少上传文本或图片');
-                return;
-            }
-            
-            try {
-                let imageUrl = null;
-                
-                if (imageFile) {
-                    // 将图片转换为Base64
-                    imageUrl = await convertImageToBase64(imageFile);
-                    
-                    // 检测文本语言并自动翻译
-                    let translation = '';
-                    let lang = 'en';
-                    
-                    if (text) {
-                        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) {
-                            lang = 'ja';
-                            translation = '【日语文本待翻译】';
-                        } else if (/[\uAC00-\uD7AF]/.test(text)) {
-                            lang = 'ko';
-                            translation = '【韩语文本待翻译】';
-                        } else if (/[a-zA-Z]/.test(text)) {
-                            lang = 'en';
-                            translation = '【英语文本待翻译】';
-                        } else {
-                            lang = 'zh';
-                            translation = text;
-                        }
-                    }
-                    
-                    // 创建新的上传内容
-                    const newUpload = {
-                        text: text,
-                        translation: translation,
-                        lang: lang,
-                        imageUrl: imageUrl
-                    };
-                    
-                    // 发送到API
-                    const result = await saveUserUploadsToAPI(newUpload);
-                    
-                    // 添加到相册
-                    const container = document.querySelector('.album-container');
-                    const quoteData = {
-                        main: text,
-                        translation: translation,
-                        lang: lang
-                    };
-                    const section = createPhotoSection(imageUrl, quoteData, false);
-                    section.dataset.uploadId = result.id; // 存储返回的ID
-                    container.appendChild(section);
-                    
-                    closeUploadModal();
-                    showMessage('上传成功！');
-                } else {
-                    // 只有文本的情况
-                    let translation = '';
-                    let lang = 'en';
-                    
-                    if (text) {
-                        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(text)) {
-                            lang = 'ja';
-                            translation = '【日语文本待翻译】';
-                        } else if (/[\uAC00-\uD7AF]/.test(text)) {
-                            lang = 'ko';
-                            translation = '【韩语文本待翻译】';
-                        } else if (/[a-zA-Z]/.test(text)) {
-                            lang = 'en';
-                            translation = '【英语文本待翻译】';
-                        } else {
-                            lang = 'zh';
-                            translation = text;
-                        }
-                    }
-                    
-                    // 创建新的上传内容（只有文本）
-                    const newUpload = {
-                        text: text,
-                        translation: translation,
-                        lang: lang,
-                        imageUrl: null
-                    };
-                    
-                    const result = await saveUserUploadsToAPI(newUpload);
-                    
-                    // 添加到相册（只有文本，使用默认背景图）
-                    const container = document.querySelector('.album-container');
-                    const quoteData = {
-                        main: text,
-                        translation: translation,
-                        lang: lang
-                    };
-                    const defaultImage = 'https://s21.ax1x.com/2025/08/26/pVyoUud.jpg';
-                    const section = createPhotoSection(defaultImage, quoteData, false);
-                    section.dataset.uploadId = result.id;
-                    container.appendChild(section);
-                    
-                    closeUploadModal();
-                    showMessage('上传成功！');
+            if (uploadType === 'card') {
+                if (!cardName) {
+                    showMessage('请输入卡片名称');
+                    return;
                 }
-            } catch (error) {
-                console.error('上传失败:', error);
-                showMessage('上传失败，请重试');
-            }
-        }
-        
-        function convertImageToBase64(file) {
-            return new Promise((resolve, reject) => {
+                
+                if (!imageFile) {
+                    showMessage('请选择卡片封面图片');
+                    return;
+                }
+                
+                if (!text) {
+                    showMessage('请输入文本内容');
+                    return;
+                }
+                
+                // 创建新卡片
+                const newCard = {
+                    id: Date.now(),
+                    name: cardName,
+                    images: []
+                };
+                
+                // 添加图片和文本到卡片
                 const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        function toggleDeleteMode() {
-            isDeleteMode = !isDeleteMode;
-            document.getElementById('addOptions').style.display = 'none';
-            
-            if (isDeleteMode) {
-                document.body.classList.add('delete-mode');
-                showMessage('已进入删除模式，点击图片上的×删除');
+                reader.onload = function(e) {
+                    newCard.images.push({
+                        url: e.target.result,
+                        quote: { main: text, translation: '', lang: 'zh' }
+                    });
+                    
+                    userCards.push(newCard);
+                    createCards();
+                    closeUploadModal();
+                    showMessage('卡片创建成功！');
+                };
+                reader.readAsDataURL(imageFile);
             } else {
-                document.body.classList.remove('delete-mode');
-                showMessage('已退出删除模式');
+                // 添加到现有卡片
+                if (!imageFile) {
+                    showMessage('请选择要添加的图片');
+                    return;
+                }
+                
+                if (!text) {
+                    showMessage('请输入文本内容');
+                    return;
+                }
+                
+                const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+                
+                if (!card) {
+                    showMessage('找不到指定的卡片');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    card.images.push({
+                        url: e.target.result,
+                        quote: { main: text, translation: '', lang: 'zh' }
+                    });
+                    
+                    // 更新查看器
+                    openAlbumViewer(currentCardId);
+                    
+                    closeUploadModal();
+                    showMessage('图片添加成功！');
+                };
+                reader.readAsDataURL(imageFile);
             }
         }
         
-        async function deleteUploadedContent(section) {
-            const uploadId = section.dataset.uploadId;
+        function enableDeleteMode() {
+            isDeleteMode = true;
+            showMessage('请点击要删除的图片');
+            // 刷新相册查看器，为每张图片添加删除按钮
+            openAlbumViewer(currentCardId);
+        }
+        
+        function showDeleteConfirm(type, id, index = null) {
+            pendingDelete = { type, id, index };
             
-            if (!uploadId) {
-                showMessage('无法删除此内容');
+            let message = '';
+            if (type === 'card') {
+                const card = [...cardsData, ...userCards].find(c => c.id == id);
+                message = `真的要删除卡片"${card.name}"吗？`;
+            } else {
+                message = '真的要删除这张图片吗？';
+            }
+            
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmDialog').style.display = 'block';
+        }
+        
+        function confirmDelete(confirmed) {
+            document.getElementById('confirmDialog').style.display = 'none';
+            
+            if (!confirmed) {
+                showMessage('已取消删除');
                 return;
             }
             
-            try {
-                const response = await fetch(DELETE_API, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: uploadId })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('删除失败');
+            const { type, id, index } = pendingDelete;
+            
+            if (type === 'card') {
+                // 删除卡片
+                const cardIndex = userCards.findIndex(c => c.id == id);
+                if (cardIndex !== -1) {
+                    userCards.splice(cardIndex, 1);
+                    showMessage('卡片删除成功');
+                    createCards();
                 }
-                
-                const container = document.querySelector('.album-container');
-                container.removeChild(section);
-                showMessage('删除成功！');
-            } catch (error) {
-                console.error('删除失败:', error);
-                showMessage('删除失败，请重试');
+            } else {
+                // 删除图片
+                const card = [...cardsData, ...userCards].find(c => c.id == id);
+                if (card && card.images[index]) {
+                    card.images.splice(index, 1);
+                    showMessage('图片删除成功');
+                    
+                    // 如果卡片没有图片了，删除卡片
+                    if (card.images.length === 0) {
+                        const cardIndex = userCards.findIndex(c => c.id == id);
+                        if (cardIndex !== -1) {
+                            userCards.splice(cardIndex, 1);
+                            backToCards();
+                        } else {
+                            // 如果是默认卡片，只返回卡片页面
+                            backToCards();
+                        }
+                    } else {
+                        // 更新查看器
+                        openAlbumViewer(id);
+                    }
+                }
             }
+            
+            // 退出删除模式
+            isDeleteMode = false;
         }
 
         // Keyboard events
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeTreasureModal();
-                closeUploadModal();
-                document.getElementById('addOptions').style.display = 'none';
-                if (isDeleteMode) {
-                    toggleDeleteMode();
+                if (document.getElementById('albumViewer').style.display === 'flex') {
+                    backToCards();
+                } else {
+                    closeUploadModal();
+                    document.getElementById('addOptions').style.display = 'none';
                 }
+            } else if (e.key === 'ArrowLeft' && document.getElementById('albumViewer').style.display === 'flex') {
+                prevSlide();
+            } else if (e.key === 'ArrowRight' && document.getElementById('albumViewer').style.display === 'flex') {
+                nextSlide();
             }
         });
 
@@ -1248,6 +1830,33 @@
                 options.style.display = 'none';
             }
         });
+
+        // 添加触摸滑动支持
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.getElementById('albumContent').addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            // 记录交互时间
+            lastInteractionTime = Date.now();
+        }, false);
+
+        document.getElementById('albumContent').addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+            // 记录交互时间
+            lastInteractionTime = Date.now();
+        }, false);
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            } else if (touchEndX > touchStartX + 50) {
+                prevSlide();
+            }
+            // 重置轮播计时器
+            resetCarouselTimer();
+        }
     </script>
 </body>
 </html>
