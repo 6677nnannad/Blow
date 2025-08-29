@@ -433,7 +433,7 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, transform 0.5s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -445,12 +445,21 @@
             z-index: 10;
         }
 
+        .album-slide.next {
+            transform: translateX(100%);
+        }
+
+        .album-slide.prev {
+            transform: translateX(-100%);
+        }
+
         .album-image {
             width: 90%;
             height: 70%;
             object-fit: contain;
             border-radius: 10px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 3px solid white; /* 添加白色描边 */
         }
 
         .album-text {
@@ -459,6 +468,7 @@
             color: white;
             max-width: 80%;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            white-space: pre-line; /* 保留换行 */
         }
 
         .album-quote {
@@ -508,15 +518,28 @@
             justify-content: center;
             margin-top: 20px;
             gap: 10px;
+            max-width: 80%;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .album-dots::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .album-dots::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
         }
 
         .dot {
-            width: 12px;
+            min-width: 12px;
             height: 12px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .dot.active {
@@ -623,6 +646,7 @@
             font-size: 14px;
             min-height: 80px;
             resize: vertical;
+            white-space: pre-line; /* 保留换行 */
         }
 
         .upload-content input[type="file"] {
@@ -669,10 +693,10 @@
         /* 删除按钮样式 */
         .delete-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 25px;
-            height: 25px;
+            bottom: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
             background: rgba(255, 0, 0, 0.7);
             color: white;
             border: none;
@@ -682,8 +706,29 @@
             justify-content: center;
             cursor: pointer;
             z-index: 100;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 编辑按钮样式 */
+        .edit-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            background: rgba(30, 144, 255, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         /* 确认删除对话框 */
@@ -765,6 +810,40 @@
             font-size: 12px;
             margin-top: 5px;
             color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 编辑名称模态框 */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10006;
+        }
+
+        .edit-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 350px;
+        }
+
+        .edit-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
         /* Responsive */
@@ -894,6 +973,20 @@
                 font-size: 14px;
                 max-width: 150px;
             }
+            
+            .delete-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+                bottom: 8px;
+                right: 8px;
+            }
+            
+            .edit-btn {
+                width: 25px;
+                height: 25px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -939,7 +1032,7 @@
         </div>
         <div class="album-actions" id="albumActions">
             <button class="action-btn" onclick="openUploadModal('image')">📤</button>
-            <button class="action-btn" onclick="enableDeleteMode()">🗑️</button>
+            <button class="action-btn" id="deleteModeBtn" onclick="toggleDeleteMode()">🗑️</button>
         </div>
         <div class="album-content" id="albumContent">
             <!-- 幻灯片将通过JS动态生成 -->
@@ -983,6 +1076,17 @@
         </div>
     </div>
 
+    <!-- 编辑名称模态框 -->
+    <div class="edit-modal" id="editModal">
+        <div class="edit-content">
+            <h3>编辑卡片名称</h3>
+            <input type="text" id="editNameInput" placeholder="请输入新名称">
+            <br>
+            <button onclick="saveCardName()">保存</button>
+            <button onclick="closeEditModal()">取消</button>
+        </div>
+    </div>
+
     <!-- 确认删除对话框 -->
     <div class="confirm-dialog" id="confirmDialog">
         <h3 id="confirmMessage">真的要删了吗？</h3>
@@ -1002,7 +1106,7 @@
 
     <script>
         // 数据结构
-        const cardsData = [
+        const defaultCardsData = [
             {
                 id: 1,
                 name: "温言",
@@ -1044,6 +1148,7 @@
             { text: "Heartbreaks are the tattoos of the soul", translation: "心碎是灵魂的纹身", lang: "en" }
         ];
 
+        let cardsData = [];
         let userCards = [];
         let currentMusic = null;
         let isPlaying = false;
@@ -1051,15 +1156,21 @@
         let isAudioReady = false;
         let currentCardId = null;
         let currentSlideIndex = 0;
-        let carouselTimeout = null; // 改为timeout而不是interval
-        let uploadType = 'card'; // 'card' 或 'image'
+        let carouselTimeout = null;
+        let uploadType = 'card';
         let isDeleteMode = false;
+        let isEditMode = false;
         let pendingDelete = { type: null, id: null, index: null };
+        let pendingEdit = { id: null };
         let meritCount = 0;
-        let lastInteractionTime = 0; // 记录最后一次交互时间
+        let lastInteractionTime = 0;
+        let slideDirection = 'next'; // 用于跟踪幻灯片切换方向
 
         // 初始化
         window.addEventListener('load', function() {
+            // 从本地存储加载数据
+            loadFromLocalStorage();
+            
             // 预加载音频
             preloadAudio();
             
@@ -1085,6 +1196,28 @@
                 }, 1000);
             }, 3000);
         });
+
+        // 从本地存储加载数据
+        function loadFromLocalStorage() {
+            const savedCards = localStorage.getItem('userCards');
+            if (savedCards) {
+                userCards = JSON.parse(savedCards);
+            }
+            
+            const savedMerit = localStorage.getItem('meritCount');
+            if (savedMerit) {
+                meritCount = parseInt(savedMerit);
+            }
+            
+            // 合并默认卡片和用户卡片
+            cardsData = [...defaultCardsData, ...userCards];
+        }
+
+        // 保存数据到本地存储
+        function saveToLocalStorage() {
+            localStorage.setItem('userCards', JSON.stringify(userCards));
+            localStorage.setItem('meritCount', meritCount.toString());
+        }
 
         // 预加载音频
         function preloadAudio() {
@@ -1153,16 +1286,8 @@
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
             
-            // 添加默认卡片
+            // 添加默认卡片和用户卡片
             cardsData.forEach(card => {
-                if (card.images && card.images.length > 0) {
-                    const cardElement = createCardElement(card);
-                    container.appendChild(cardElement);
-                }
-            });
-            
-            // 添加用户卡片
-            userCards.forEach(card => {
                 if (card.images && card.images.length > 0) {
                     const cardElement = createCardElement(card);
                     container.appendChild(cardElement);
@@ -1217,9 +1342,21 @@
             
             cardWrapper.appendChild(cardElement);
             
+            // 添加编辑按钮（编辑模式下）
+            if (isEditMode && card.id !== 1) { // 默认卡片不能编辑
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn';
+                editBtn.textContent = '✏️';
+                editBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    openEditModal(card.id);
+                };
+                cardWrapper.appendChild(editBtn);
+            }
+            
             // 添加点击事件
             cardWrapper.addEventListener('click', function() {
-                if (isDeleteMode) return; // 删除模式下不响应点击
+                if (isDeleteMode || isEditMode) return;
                 openAlbumViewer(card.id);
             });
             
@@ -1228,7 +1365,7 @@
         
         function openAlbumViewer(cardId) {
             currentCardId = cardId;
-            const card = [...cardsData, ...userCards].find(c => c.id == cardId);
+            const card = cardsData.find(c => c.id == cardId);
             
             if (!card) return;
             
@@ -1251,6 +1388,9 @@
                 
                 // 显示操作按钮
                 document.getElementById('albumActions').style.display = 'flex';
+                
+                // 更新删除模式按钮文本
+                document.getElementById('deleteModeBtn').textContent = isDeleteMode ? '❌' : '🗑️';
                 
                 // 隐藏加号按钮
                 document.getElementById('addButton').style.display = 'none';
@@ -1291,7 +1431,7 @@
                     slide.appendChild(img);
                     
                     // 添加删除按钮（如果处于删除模式）
-                    if (isDeleteMode) {
+                    if (isDeleteMode && card.id !== 1) { // 默认卡片不能删除
                         const deleteBtn = document.createElement('button');
                         deleteBtn.className = 'delete-btn';
                         deleteBtn.textContent = '×';
@@ -1304,16 +1444,27 @@
                     
                     albumContent.appendChild(slide);
                     
-                    // 创建轮播点
-                    const dot = document.createElement('div');
-                    dot.className = 'dot';
-                    if (index === 0) dot.classList.add('active');
-                    dot.dataset.index = index;
-                    dot.addEventListener('click', function() {
-                        goToSlide(index);
-                    });
-                    
-                    dotsContainer.appendChild(dot);
+                    // 创建轮播点（最多显示4个）
+                    if (index < 4 || index === currentSlideIndex || 
+                        index === 0 || index === card.images.length - 1) {
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        if (index === 0) dot.classList.add('active');
+                        dot.dataset.index = index;
+                        dot.addEventListener('click', function() {
+                            goToSlide(index);
+                        });
+                        
+                        dotsContainer.appendChild(dot);
+                    } else if (index === 4 && card.images.length > 4) {
+                        // 添加省略号
+                        const ellipsis = document.createElement('div');
+                        ellipsis.className = 'dot';
+                        ellipsis.style.background = 'transparent';
+                        ellipsis.textContent = '...';
+                        ellipsis.style.cursor = 'default';
+                        dotsContainer.appendChild(ellipsis);
+                    }
                 });
                 
                 // 显示查看器和返回区域
@@ -1345,69 +1496,132 @@
         }
         
         function nextSlide() {
-            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            const card = cardsData.find(c => c.id == currentCardId);
             if (!card) return;
             
             const slides = document.querySelectorAll('.album-slide');
             const dots = document.querySelectorAll('.dot');
             
-            slides[currentSlideIndex].classList.remove('active');
-            dots[currentSlideIndex].classList.remove('active');
+            // 设置切换方向
+            slideDirection = 'next';
+            slides[currentSlideIndex].classList.add('next');
             
-            currentSlideIndex = (currentSlideIndex + 1) % card.images.length;
-            
-            slides[currentSlideIndex].classList.add('active');
-            dots[currentSlideIndex].classList.add('active');
-            
-            // 更新计数器
-            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
-            
-            // 重置轮播计时器
-            resetCarouselTimer();
+            setTimeout(() => {
+                slides[currentSlideIndex].classList.remove('active');
+                slides[currentSlideIndex].classList.remove('next');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.remove('active');
+                
+                currentSlideIndex = (currentSlideIndex + 1) % card.images.length;
+                
+                slides[currentSlideIndex].classList.add('active');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.add('active');
+                
+                // 更新计数器
+                document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+                
+                // 更新导航点显示
+                updateDotsDisplay();
+                
+                // 重置轮播计时器
+                resetCarouselTimer();
+            }, 500);
         }
         
         function prevSlide() {
-            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            const card = cardsData.find(c => c.id == currentCardId);
             if (!card) return;
             
             const slides = document.querySelectorAll('.album-slide');
             const dots = document.querySelectorAll('.dot');
             
-            slides[currentSlideIndex].classList.remove('active');
-            dots[currentSlideIndex].classList.remove('active');
+            // 设置切换方向
+            slideDirection = 'prev';
+            slides[currentSlideIndex].classList.add('prev');
             
-            currentSlideIndex = (currentSlideIndex - 1 + card.images.length) % card.images.length;
-            
-            slides[currentSlideIndex].classList.add('active');
-            dots[currentSlideIndex].classList.add('active');
-            
-            // 更新计数器
-            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
-            
-            // 重置轮播计时器
-            resetCarouselTimer();
+            setTimeout(() => {
+                slides[currentSlideIndex].classList.remove('active');
+                slides[currentSlideIndex].classList.remove('prev');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.remove('active');
+                
+                currentSlideIndex = (currentSlideIndex - 1 + card.images.length) % card.images.length;
+                
+                slides[currentSlideIndex].classList.add('active');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.add('active');
+                
+                // 更新计数器
+                document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+                
+                // 更新导航点显示
+                updateDotsDisplay();
+                
+                // 重置轮播计时器
+                resetCarouselTimer();
+            }, 500);
         }
         
         function goToSlide(index) {
-            const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+            const card = cardsData.find(c => c.id == currentCardId);
             if (!card) return;
             
             const slides = document.querySelectorAll('.album-slide');
             const dots = document.querySelectorAll('.dot');
             
-            slides[currentSlideIndex].classList.remove('active');
-            dots[currentSlideIndex].classList.remove('active');
+            // 设置切换方向
+            slideDirection = index > currentSlideIndex ? 'next' : 'prev';
+            slides[currentSlideIndex].classList.add(slideDirection);
             
-            currentSlideIndex = index;
+            setTimeout(() => {
+                slides[currentSlideIndex].classList.remove('active');
+                slides[currentSlideIndex].classList.remove('next');
+                slides[currentSlideIndex].classList.remove('prev');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.remove('active');
+                
+                currentSlideIndex = index;
+                
+                slides[currentSlideIndex].classList.add('active');
+                if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.add('active');
+                
+                // 更新计数器
+                document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
+                
+                // 更新导航点显示
+                updateDotsDisplay();
+                
+                // 重置轮播计时器
+                resetCarouselTimer();
+            }, 500);
+        }
+        
+        function updateDotsDisplay() {
+            const card = cardsData.find(c => c.id == currentCardId);
+            if (!card || card.images.length <= 4) return;
             
-            slides[currentSlideIndex].classList.add('active');
-            dots[currentSlideIndex].classList.add('active');
+            const dotsContainer = document.getElementById('albumDots');
+            dotsContainer.innerHTML = '';
             
-            // 更新计数器
-            document.getElementById('albumCounter').textContent = `${currentSlideIndex + 1} / ${card.images.length}`;
-            
-            // 重置轮播计时器
-            resetCarouselTimer();
+            // 重新创建导航点
+            card.images.forEach((image, index) => {
+                if (index < 4 || index === currentSlideIndex || 
+                    index === 0 || index === card.images.length - 1) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    if (index === currentSlideIndex) dot.classList.add('active');
+                    dot.dataset.index = index;
+                    dot.addEventListener('click', function() {
+                        goToSlide(index);
+                    });
+                    
+                    dotsContainer.appendChild(dot);
+                } else if (index === 4 && currentSlideIndex > 3 && currentSlideIndex < card.images.length - 1) {
+                    // 添加省略号
+                    const ellipsis = document.createElement('div');
+                    ellipsis.className = 'dot';
+                    ellipsis.style.background = 'transparent';
+                    ellipsis.textContent = '...';
+                    ellipsis.style.cursor = 'default';
+                    dotsContainer.appendChild(ellipsis);
+                }
+            });
         }
         
         function backToCards() {
@@ -1489,6 +1703,8 @@
 
         function tapWoodenFish() {
             meritCount++;
+            // 保存到本地存储
+            saveToLocalStorage();
             
             // 显示功德气泡 - 修改位置到木鱼按钮下方
             const bubble = document.getElementById('meritBubble');
@@ -1562,6 +1778,16 @@
                 return;
             }
             
+            // 切换编辑模式
+            if (isEditMode) {
+                isEditMode = false;
+                showMessage('已退出编辑模式');
+                
+                // 刷新视图
+                createCards();
+                return;
+            }
+            
             // 切换删除模式
             if (isDeleteMode) {
                 isDeleteMode = false;
@@ -1569,7 +1795,6 @@
                 
                 // 刷新视图
                 createCards();
-                
                 return;
             }
             
@@ -1588,12 +1813,24 @@
                 options.style.display = 'none';
                 return;
             } else {
-                // 不在卡片内 - 显示上传卡片和删除卡片选项
+                // 不在卡片内 - 显示上传卡片、编辑卡片和删除卡片选项
                 const uploadBtn = document.createElement('button');
                 uploadBtn.className = 'option-btn';
                 uploadBtn.textContent = '上传卡片';
                 uploadBtn.onclick = function() {
                     openUploadModal('card');
+                };
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'option-btn';
+                editBtn.textContent = '编辑卡片';
+                editBtn.onclick = function() {
+                    isEditMode = true;
+                    options.style.display = 'none';
+                    showMessage('请点击要编辑的卡片');
+                    
+                    // 刷新卡片显示
+                    createCards();
                 };
                 
                 const deleteBtn = document.createElement('button');
@@ -1607,19 +1844,23 @@
                     // 为所有卡片添加删除按钮
                     const cards = document.querySelectorAll('.card-wrapper');
                     cards.forEach(card => {
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'delete-btn';
-                        deleteBtn.textContent = '×';
-                        deleteBtn.onclick = function(e) {
-                            e.stopPropagation();
-                            const cardId = card.dataset.cardId;
-                            showDeleteConfirm('card', cardId);
-                        };
-                        card.appendChild(deleteBtn);
+                        const cardId = card.dataset.cardId;
+                        // 默认卡片不能删除
+                        if (cardId != 1) {
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.className = 'delete-btn';
+                            deleteBtn.textContent = '×';
+                            deleteBtn.onclick = function(e) {
+                                e.stopPropagation();
+                                showDeleteConfirm('card', cardId);
+                            };
+                            card.appendChild(deleteBtn);
+                        }
                     });
                 };
                 
                 options.appendChild(uploadBtn);
+                options.appendChild(editBtn);
                 options.appendChild(deleteBtn);
             }
         }
@@ -1689,6 +1930,8 @@
                     });
                     
                     userCards.push(newCard);
+                    cardsData = [...defaultCardsData, ...userCards];
+                    saveToLocalStorage();
                     createCards();
                     closeUploadModal();
                     showMessage('卡片创建成功！');
@@ -1706,7 +1949,7 @@
                     return;
                 }
                 
-                const card = [...cardsData, ...userCards].find(c => c.id == currentCardId);
+                const card = cardsData.find(c => c.id == currentCardId);
                 
                 if (!card) {
                     showMessage('找不到指定的卡片');
@@ -1720,6 +1963,15 @@
                         quote: { main: text, translation: '', lang: 'zh' }
                     });
                     
+                    // 更新本地存储
+                    if (card.id !== 1) { // 不是默认卡片
+                        const cardIndex = userCards.findIndex(c => c.id == card.id);
+                        if (cardIndex !== -1) {
+                            userCards[cardIndex] = card;
+                            saveToLocalStorage();
+                        }
+                    }
+                    
                     // 更新查看器
                     openAlbumViewer(currentCardId);
                     
@@ -1730,11 +1982,65 @@
             }
         }
         
-        function enableDeleteMode() {
-            isDeleteMode = true;
-            showMessage('请点击要删除的图片');
-            // 刷新相册查看器，为每张图片添加删除按钮
+        function toggleDeleteMode() {
+            isDeleteMode = !isDeleteMode;
+            document.getElementById('deleteModeBtn').textContent = isDeleteMode ? '❌' : '🗑️';
+            
+            if (isDeleteMode) {
+                showMessage('删除模式已开启，点击图片右下角的×删除');
+            } else {
+                showMessage('删除模式已关闭');
+            }
+            
+            // 刷新相册查看器
             openAlbumViewer(currentCardId);
+        }
+        
+        function openEditModal(cardId) {
+            pendingEdit = { id: cardId };
+            const card = cardsData.find(c => c.id == cardId);
+            
+            if (!card) return;
+            
+            document.getElementById('editNameInput').value = card.name;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editNameInput').value = '';
+        }
+        
+        function saveCardName() {
+            const newName = document.getElementById('editNameInput').value.trim();
+            
+            if (!newName) {
+                showMessage('请输入卡片名称');
+                return;
+            }
+            
+            const card = cardsData.find(c => c.id == pendingEdit.id);
+            
+            if (!card) {
+                showMessage('找不到指定的卡片');
+                return;
+            }
+            
+            card.name = newName;
+            
+            // 更新本地存储
+            if (card.id !== 1) { // 不是默认卡片
+                const cardIndex = userCards.findIndex(c => c.id == card.id);
+                if (cardIndex !== -1) {
+                    userCards[cardIndex] = card;
+                    saveToLocalStorage();
+                }
+            }
+            
+            // 刷新显示
+            createCards();
+            closeEditModal();
+            showMessage('卡片名称修改成功');
         }
         
         function showDeleteConfirm(type, id, index = null) {
@@ -1742,7 +2048,7 @@
             
             let message = '';
             if (type === 'card') {
-                const card = [...cardsData, ...userCards].find(c => c.id == id);
+                const card = cardsData.find(c => c.id == id);
                 message = `真的要删除卡片"${card.name}"吗？`;
             } else {
                 message = '真的要删除这张图片吗？';
@@ -1767,24 +2073,35 @@
                 const cardIndex = userCards.findIndex(c => c.id == id);
                 if (cardIndex !== -1) {
                     userCards.splice(cardIndex, 1);
+                    cardsData = [...defaultCardsData, ...userCards];
+                    saveToLocalStorage();
                     showMessage('卡片删除成功');
                     createCards();
                 }
             } else {
                 // 删除图片
-                const card = [...cardsData, ...userCards].find(c => c.id == id);
+                const card = cardsData.find(c => c.id == id);
                 if (card && card.images[index]) {
                     card.images.splice(index, 1);
+                    
+                    // 更新本地存储
+                    if (card.id !== 1) { // 不是默认卡片
+                        const cardIndex = userCards.findIndex(c => c.id == card.id);
+                        if (cardIndex !== -1) {
+                            userCards[cardIndex] = card;
+                            saveToLocalStorage();
+                        }
+                    }
+                    
                     showMessage('图片删除成功');
                     
                     // 如果卡片没有图片了，删除卡片
-                    if (card.images.length === 0) {
+                    if (card.images.length === 0 && card.id !== 1) {
                         const cardIndex = userCards.findIndex(c => c.id == id);
                         if (cardIndex !== -1) {
                             userCards.splice(cardIndex, 1);
-                            backToCards();
-                        } else {
-                            // 如果是默认卡片，只返回卡片页面
+                            cardsData = [...defaultCardsData, ...userCards];
+                            saveToLocalStorage();
                             backToCards();
                         }
                     } else {
@@ -1803,8 +2120,11 @@
             if (e.key === 'Escape') {
                 if (document.getElementById('albumViewer').style.display === 'flex') {
                     backToCards();
-                } else {
+                } else if (document.getElementById('uploadModal').style.display === 'flex') {
                     closeUploadModal();
+                } else if (document.getElementById('editModal').style.display === 'flex') {
+                    closeEditModal();
+                } else {
                     document.getElementById('addOptions').style.display = 'none';
                 }
             } else if (e.key === 'ArrowLeft' && document.getElementById('albumViewer').style.display === 'flex') {
